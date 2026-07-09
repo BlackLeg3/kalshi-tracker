@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install *)",
+      "Bash(python3 seed_data.py)",
+      "Bash(python3 -m pip install -q -r /Users/jamescarroll/Desktop/Kalshi/requirements.txt)",
+      "Bash(/Users/jamescarroll/Library/Python/3.13/bin/python3 app.py)",
+      "Bash(python3 app.py)",
+      "Bash(curl -s http://localhost:5000/api/stats)",
+      "Bash(curl -s http://127.0.0.1:5000/api/stats)",
+      "Bash(pkill -f \"python3 app.py\")",
+      "Bash(curl -s http://127.0.0.1:5000/)"
+    ]
+  }
+}
