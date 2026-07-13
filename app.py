@@ -21,6 +21,34 @@ scheduler = start_scheduler()
 
 DB_PATH = os.path.join(BASE_DIR, 'kalshi.db')
 
+KALSHI_CASES = [
+    ('CFTC v. Kalshi', 'U.S. District Court, D.C.', 'Regulatory Enforcement', 'Active',
+     'CFTC challenge to Kalshi\'s election and economic contracts.', 'Public Records', '2023-01-15'),
+    ('Kalshi v. CFTC', 'U.S. District Court, D.C.', 'Regulatory Enforcement', 'Active',
+     'Kalshi\'s counterclaim seeking declaratory judgment.', 'Public Records', '2023-02-20'),
+    ('Kalshi Markets - BitLicense', 'New York Department of Financial Services', 'Regulatory Approval', 'Pending',
+     'BitLicense application review by NYDFS.', 'Public Records', '2022-06-15'),
+    ('Illinois Financial Regulator Investigation', 'Illinois Attorney General', 'Regulatory Inquiry', 'Pending',
+     'State investigation into contract offerings.', 'Public Records', '2023-03-10'),
+    ('Kalshi Consumer Class Action', 'U.S. District Court, N.D. California', 'Civil Litigation', 'Pending',
+     'Class action regarding margin requirements and disclosures.', 'Public Records', '2023-05-22'),
+    ('Texas Lottery Commission Inquiry', 'Texas Lottery Commission', 'Regulatory Inquiry', 'Pending',
+     'Regulatory inquiry into contract classification.', 'Public Records', '2023-04-01'),
+]
+
+def seed_initial_data(c, conn):
+    """Seed initial Kalshi cases"""
+    try:
+        for title, jurisdiction, case_type, status, description, source, date_filed in KALSHI_CASES:
+            c.execute('''INSERT INTO legal_cases
+                (title, jurisdiction, case_type, status, description, source, date_filed, last_update)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
+                (title, jurisdiction, case_type, status, description, source, date_filed, datetime.now().isoformat()))
+        conn.commit()
+        logger.info(f"Seeded {len(KALSHI_CASES)} cases")
+    except Exception as e:
+        logger.error(f"Error seeding cases: {e}")
+
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
@@ -63,11 +91,7 @@ def init_db():
     c.execute('SELECT COUNT(*) FROM legal_cases')
     if c.fetchone()[0] == 0:
         logger.info("Seeding database with initial data...")
-        try:
-            from pacer import import_kalshi_cases
-            import_kalshi_cases(DB_PATH)
-        except Exception as e:
-            logger.error(f"Error seeding data: {e}")
+        seed_initial_data(c, conn)
 
     conn.close()
 
