@@ -243,4 +243,15 @@ def shutdown_scheduler(exception=None):
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True, port=8001, host='127.0.0.1')
+
+    # Get environment variables
+    debug = os.getenv('DEBUG', 'true').lower() == 'true'
+    port = int(os.getenv('PORT', 8001))
+    host = os.getenv('HOST', '127.0.0.1')
+
+    # On production (Railway), use 0.0.0.0
+    if os.getenv('RAILWAY_ENVIRONMENT'):
+        host = '0.0.0.0'
+        debug = False
+
+    app.run(debug=debug, port=port, host=host)
