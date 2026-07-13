@@ -16,8 +16,13 @@ BASE_DIR = '/Users/jamescarroll/Desktop/Kalshi'
 app = Flask(__name__, static_folder=BASE_DIR, static_url_path='')
 CORS(app)
 
-# Start background scheduler
-scheduler = start_scheduler()
+# Start background scheduler (with error handling)
+scheduler = None
+try:
+    scheduler = start_scheduler()
+except Exception as e:
+    logger.error(f"Failed to start scheduler: {e}")
+    scheduler = None
 
 DB_PATH = os.path.join(BASE_DIR, 'kalshi.db')
 
@@ -228,6 +233,9 @@ def add_transaction():
 def scheduler_status():
     """Get scheduler status and summary"""
     try:
+        if scheduler is None:
+            return jsonify({'status': 'disabled', 'message': 'Scheduler not available'})
+
         status = scheduler.get_status_summary()
         return jsonify({
             'status': 'running',
@@ -243,7 +251,10 @@ def scheduler_status():
 def trigger_update():
     """Manually trigger an immediate update"""
     try:
-        action = request.json.get('action', 'all')
+        if scheduler is None:
+            return jsonify({'status': 'error', 'message': 'Scheduler not available'}), 503
+
+        action = request.json.get('action', 'all') if request.json else 'all'
 
         if action in ['sec', 'all']:
             scheduler.fetch_sec_filings()
