@@ -57,74 +57,16 @@ class KalshiDataScheduler:
 
     def fetch_sec_filings(self):
         """
-        Fetch latest Kalshi SEC filings and add to database
+        Fetch latest Kalshi litigation and regulatory data from all sources
         """
-        logger.info("📄 Fetching SEC EDGAR filings for Kalshi...")
+        logger.info("📄 Fetching latest Kalshi cases from all data sources...")
 
         try:
-            # Query SEC EDGAR API
-            params = {
-                'action': 'getcompany',
-                'CIK': KALSHI_CIK,
-                'type': '8-K,10-Q,10-K',  # Material events, quarterly, annual
-                'dateb': '',
-                'owner': 'exclude',
-                'count': 100,
-                'output': 'json'
-            }
-
-            response = requests.get(SEC_EDGAR_API, params=params, timeout=10)
-
-            if response.status_code != 200:
-                logger.warning(f"SEC EDGAR API returned {response.status_code}")
-                return
-
-            data = response.json()
-            filings = data.get('filings', {}).get('recent', {}).get('filings', [])
-
-            if not filings:
-                logger.info("  No new SEC filings found")
-                return
-
-            conn = sqlite3.connect(DB_PATH)
-            c = conn.cursor()
-
-            new_filings = 0
-            for filing in filings[:5]:  # Check last 5 filings
-                filing_date = filing.get('filingDate', '')
-                form_type = filing.get('form', '')
-                description = filing.get('description', '')
-
-                # Check if we already have this filing
-                c.execute('SELECT id FROM legal_cases WHERE date_filed = ? AND title LIKE ?',
-                         (filing_date, '%SEC%'))
-
-                if c.fetchone():
-                    continue
-
-                # Add new filing as a case
-                c.execute('''INSERT INTO legal_cases
-                    (title, jurisdiction, case_type, status, description, source, date_filed, last_update)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-                    (f'SEC Filing: {form_type}',
-                     'U.S. Securities and Exchange Commission',
-                     'Regulatory Filing',
-                     'Active',
-                     f'{description} - Filed: {filing_date}',
-                     'SEC EDGAR',
-                     filing_date,
-                     datetime.now().isoformat()))
-
-                new_filings += 1
-                logger.info(f"  ✓ Added: {form_type} ({filing_date})")
-
-            conn.commit()
-            conn.close()
-
-            logger.info(f"✅ SEC update complete - {new_filings} new filings added")
-
+            from data_sources import update_data
+            updated = update_data(DB_PATH)
+            logger.info(f"✅ Data update complete - {updated} cases processed")
         except Exception as e:
-            logger.error(f"❌ Error fetching SEC filings: {e}")
+            logger.error(f"❌ Error updating data sources: {e}")
 
     def update_case_statuses(self):
         """
