@@ -5,9 +5,15 @@ from flask_cors import CORS
 from datetime import datetime
 import os
 
+# Import scheduler
+from scheduler import start_scheduler, stop_scheduler
+
 BASE_DIR = '/Users/jamescarroll/Desktop/Kalshi'
 app = Flask(__name__, static_folder=BASE_DIR, static_url_path='')
 CORS(app)
+
+# Start background scheduler
+scheduler = start_scheduler()
 
 DB_PATH = os.path.join(BASE_DIR, 'kalshi.db')
 
@@ -170,6 +176,41 @@ def add_transaction():
     conn.close()
     return jsonify({'status': 'success'}), 201
 
+@app.route('/api/scheduler/status', methods=['GET'])
+def scheduler_status():
+    """Get scheduler status and summary"""
+    try:
+        status = scheduler.get_status_summary()
+        return jsonify({
+            'status': 'running',
+            'cases_summary': status,
+            'next_sec_check': 'Daily at 2:00 AM',
+            'next_status_update': 'Weekly Monday at 9:00 AM',
+            'last_update': datetime.now().isoformat()
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scheduler/update-now', methods=['POST'])
+def trigger_update():
+    """Manually trigger an immediate update"""
+    try:
+        action = request.json.get('action', 'all')
+
+        if action in ['sec', 'all']:
+            scheduler.fetch_sec_filings()
+
+        if action in ['cases', 'all']:
+            scheduler.update_case_statuses()
+
+        return jsonify({
+            'status': 'success',
+            'message': f'Triggered {action} update',
+            'timestamp': datetime.now().isoformat()
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
     conn = get_db()
@@ -194,6 +235,11 @@ def get_stats():
         'status_breakdown': status_breakdown,
         'total_monthly_volume': total_volume
     })
+
+@app.teardown_appcontext
+def shutdown_scheduler(exception=None):
+    """Stop scheduler on app shutdown"""
+    stop_scheduler()
 
 if __name__ == '__main__':
     init_db()
