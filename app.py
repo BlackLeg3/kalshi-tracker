@@ -12,19 +12,21 @@ logger = logging.getLogger(__name__)
 # Import scheduler
 from scheduler import start_scheduler, stop_scheduler
 
-BASE_DIR = '/Users/jamescarroll/Desktop/Kalshi'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, static_folder=BASE_DIR, static_url_path='')
 CORS(app)
 
-# Start background scheduler (with error handling)
+DB_PATH = os.path.join(BASE_DIR, 'kalshi.db')
+
+# Start background scheduler (with error handling) - AFTER DB setup
 scheduler = None
 try:
+    # Ensure DB is initialized before scheduler starts
+    init_db()
     scheduler = start_scheduler()
 except Exception as e:
     logger.error(f"Failed to start scheduler: {e}")
     scheduler = None
-
-DB_PATH = os.path.join(BASE_DIR, 'kalshi.db')
 
 KALSHI_CASES = [
     ('CFTC v. Kalshi', 'U.S. District Court, D.C.', 'Regulatory Enforcement', 'Active',
@@ -107,11 +109,13 @@ def get_db():
 
 @app.before_request
 def before_request():
-    """Ensure database is initialized before processing requests"""
+    """Ensure database exists before processing requests"""
     try:
-        init_db()
+        # Just verify DB exists, don't re-init every request
+        if not os.path.exists(DB_PATH):
+            init_db()
     except Exception as e:
-        logger.error(f"Error initializing database: {e}")
+        logger.error(f"Error checking database: {e}")
         pass
 
 @app.route('/')
