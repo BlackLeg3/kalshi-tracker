@@ -18,12 +18,20 @@ CORS(app)
 
 DB_PATH = os.path.join(BASE_DIR, 'kalshi.db')
 
-# Start background scheduler (with error handling) - AFTER DB setup
+# Initialize database
+init_db()
+
+# Start background scheduler (with error handling)
 scheduler = None
 try:
-    # Ensure DB is initialized before scheduler starts
-    init_db()
     scheduler = start_scheduler()
+    # Trigger initial data update on startup
+    try:
+        from data_sources import update_data
+        logger.info("Running initial data update on startup...")
+        update_data(DB_PATH)
+    except Exception as e:
+        logger.warning(f"Initial data update failed: {e}")
 except Exception as e:
     logger.error(f"Failed to start scheduler: {e}")
     scheduler = None
