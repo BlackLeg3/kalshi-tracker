@@ -1,9 +1,13 @@
 import sqlite3
 import json
+import logging
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from datetime import datetime
 import os
+
+# Set up logging
+logger = logging.getLogger(__name__)
 
 # Import scheduler
 from scheduler import start_scheduler, stop_scheduler
@@ -54,12 +58,32 @@ def init_db():
     )''')
 
     conn.commit()
+
+    # Seed data if tables are empty
+    c.execute('SELECT COUNT(*) FROM legal_cases')
+    if c.fetchone()[0] == 0:
+        logger.info("Seeding database with initial data...")
+        try:
+            from pacer import import_kalshi_cases
+            import_kalshi_cases(DB_PATH)
+        except Exception as e:
+            logger.error(f"Error seeding data: {e}")
+
     conn.close()
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
+
+@app.before_request
+def before_request():
+    """Ensure database is initialized before processing requests"""
+    try:
+        init_db()
+    except Exception as e:
+        logger.error(f"Error initializing database: {e}")
+        pass
 
 @app.route('/')
 def index():
