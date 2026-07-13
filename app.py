@@ -44,17 +44,53 @@ KALSHI_CASES = [
 ]
 
 def seed_initial_data(c, conn):
-    """Seed initial Kalshi cases"""
+    """Seed initial Kalshi cases, states, and transactions"""
     try:
+        # Seed cases
         for title, jurisdiction, case_type, status, description, source, date_filed in KALSHI_CASES:
             c.execute('''INSERT INTO legal_cases
                 (title, jurisdiction, case_type, status, description, source, date_filed, last_update)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
                 (title, jurisdiction, case_type, status, description, source, date_filed, datetime.now().isoformat()))
+
+        # Seed states
+        states_data = [
+            ('Illinois', 'Approved', 'Regulated', 'Limited offerings available'),
+            ('Massachusetts', 'Approved', 'Fintech License', 'Full operations'),
+            ('Colorado', 'Approved', 'Regulated', 'Operations commenced'),
+            ('New York', 'Pending', 'BitLicense', 'Under review by NYDFS'),
+            ('California', 'Pending', 'Money Transmitter', 'Compliance review ongoing'),
+            ('Texas', 'Pending', 'Money Transmitter', 'License application submitted'),
+            ('Florida', 'Denied', 'N/A', 'Regulatory concerns cited'),
+            ('Oregon', 'Pending', 'License Application', 'Awaiting review'),
+        ]
+        for state, status, license_type, notes in states_data:
+            c.execute('''INSERT INTO state_status
+                (state, operating_status, license_type, notes, last_update)
+                VALUES (?, ?, ?, ?, ?)''',
+                (state, status, license_type, notes, datetime.now().isoformat()))
+
+        # Seed transactions
+        transactions_data = [
+            ('Illinois', 45000, 150.00, 'Election,Economic,Weather', 'Election Contracts', 8900),
+            ('Massachusetts', 32000, 125.00, 'Election,Sports,Political', 'Political Outcomes', 6200),
+            ('Colorado', 18500, 110.00, 'Election,Crypto,Commodities', 'Election Contracts', 3500),
+            ('California', 8200, 95.00, 'Election,Technology', 'Technology Events', 1500),
+            ('Texas', 5400, 105.00, 'Election,Weather', 'Election Contracts', 950),
+            ('New York', 3200, 140.00, 'Finance,Markets', 'Market Outcomes', 620),
+            ('Florida', 0, 0.00, '', 'N/A', 0),
+            ('Oregon', 1800, 100.00, 'Election,Weather', 'Election Contracts', 340),
+        ]
+        for state, volume, avg_value, contracts, top, users in transactions_data:
+            c.execute('''INSERT INTO transaction_data
+                (state, monthly_volume, avg_contract_value, contract_types, top_contract, active_users, last_update)
+                VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                (state, volume, avg_value, contracts, top, users, datetime.now().isoformat()))
+
         conn.commit()
-        logger.info(f"Seeded {len(KALSHI_CASES)} cases")
+        logger.info(f"Seeded {len(KALSHI_CASES)} cases, {len(states_data)} states, {len(transactions_data)} transactions")
     except Exception as e:
-        logger.error(f"Error seeding cases: {e}")
+        logger.error(f"Error seeding data: {e}")
 
 def init_db():
     conn = sqlite3.connect(DB_PATH)
