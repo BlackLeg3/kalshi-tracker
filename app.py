@@ -46,6 +46,11 @@ KALSHI_CASES = [
 def seed_initial_data(c, conn):
     """Seed initial Kalshi cases, states, and transactions"""
     try:
+        # Clear existing data to avoid duplicates
+        c.execute('DELETE FROM legal_cases')
+        c.execute('DELETE FROM state_status')
+        c.execute('DELETE FROM transaction_data')
+
         # Seed cases
         for title, jurisdiction, case_type, status, description, source, date_filed in KALSHI_CASES:
             c.execute('''INSERT INTO legal_cases
@@ -130,9 +135,11 @@ def init_db():
 
     conn.commit()
 
-    # Seed data if tables are empty
-    c.execute('SELECT COUNT(*) FROM legal_cases')
-    if c.fetchone()[0] == 0:
+    # Seed data if any table is empty
+    c.execute('SELECT COUNT(*) FROM state_status')
+    state_count = c.fetchone()[0]
+
+    if state_count == 0:
         logger.info("Seeding database with initial data...")
         seed_initial_data(c, conn)
 
