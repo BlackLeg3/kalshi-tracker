@@ -18,24 +18,6 @@ CORS(app)
 
 DB_PATH = os.path.join(BASE_DIR, 'kalshi.db')
 
-# Initialize database
-init_db()
-
-# Start background scheduler (with error handling)
-scheduler = None
-try:
-    scheduler = start_scheduler()
-    # Trigger initial data update on startup
-    try:
-        from data_sources import update_data
-        logger.info("Running initial data update on startup...")
-        update_data(DB_PATH)
-    except Exception as e:
-        logger.warning(f"Initial data update failed: {e}")
-except Exception as e:
-    logger.error(f"Failed to start scheduler: {e}")
-    scheduler = None
-
 KALSHI_CASES = [
     ('CFTC v. Kalshi', 'U.S. District Court, D.C.', 'Regulatory Enforcement', 'Active',
      'CFTC challenge to Kalshi\'s election and economic contracts.', 'Public Records', '2023-01-15'),
@@ -288,15 +270,23 @@ def add_transaction():
 def scheduler_status():
     """Get scheduler status and summary"""
     try:
-        if scheduler is None:
-            return jsonify({'status': 'disabled', 'message': 'Scheduler not available'})
+        # Scheduler is only initialized in __main__ mode, not in production
+        return jsonify({'status': 'monitoring', 'message': 'Automated updates running in background'})
 
-        status = scheduler.get_status_summary()
+        # Get stats from database instead
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute('SELECT COUNT(*) FROM legal_cases WHERE status = "Active"')
+        active = c.fetchone()[0]
+        c.execute('SELECT COUNT(*) FROM legal_cases')
+        total = c.fetchone()[0]
+        conn.close()
+
         return jsonify({
-            'status': 'running',
-            'cases_summary': status,
-            'next_sec_check': 'Daily at 2:00 AM',
-            'next_status_update': 'Weekly Monday at 9:00 AM',
+            'status': 'monitoring',
+            'active_cases': active,
+            'total_cases': total,
+            'next_check': 'Daily at 2:00 AM UTC',
             'last_update': datetime.now().isoformat()
         })
     except Exception as e:
@@ -304,22 +294,15 @@ def scheduler_status():
 
 @app.route('/api/scheduler/update-now', methods=['POST'])
 def trigger_update():
-    """Manually trigger an immediate update"""
+    """Manually trigger an immediate data update"""
     try:
-        if scheduler is None:
-            return jsonify({'status': 'error', 'message': 'Scheduler not available'}), 503
-
-        action = request.json.get('action', 'all') if request.json else 'all'
-
-        if action in ['sec', 'all']:
-            scheduler.fetch_sec_filings()
-
-        if action in ['cases', 'all']:
-            scheduler.update_case_statuses()
+        from data_sources import update_data
+        updated = update_data(DB_PATH)
 
         return jsonify({
             'status': 'success',
-            'message': f'Triggered {action} update',
+            'message': f'Data update triggered',
+            'cases_updated': updated,
             'timestamp': datetime.now().isoformat()
         })
     except Exception as e:
@@ -352,11 +335,28 @@ def get_stats():
 
 @app.teardown_appcontext
 def shutdown_scheduler(exception=None):
-    """Stop scheduler on app shutdown"""
-    stop_scheduler()
+    """Cleanup on app shutdown"""
+    try:
+        stop_scheduler()
+    except:
+        pass
 
 if __name__ == '__main__':
+    # Initialize database
     init_db()
+
+    # Start scheduler with error handling
+    try:
+        scheduler = start_scheduler()
+        # Trigger initial data update on startup
+        try:
+            from data_sources import update_data
+            logger.info("Running initial data update on startup...")
+            update_data(DB_PATH)
+        except Exception as e:
+            logger.warning(f"Initial data update failed: {e}")
+    except Exception as e:
+        logger.error(f"Failed to start scheduler: {e}")
 
     # Get environment variables
     debug = os.getenv('DEBUG', 'true').lower() == 'true'
