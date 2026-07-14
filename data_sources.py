@@ -132,8 +132,8 @@ class DataSources:
 
         # States with verified, active Kalshi litigation / enforcement
         target_states = [
-            'Tennessee', 'Ohio', 'Connecticut', 'New Jersey',
-            'Nevada', 'New York', 'Massachusetts', 'Maryland'
+            'New Jersey', 'Tennessee', 'Nevada', 'Maryland',
+            'New York', 'Massachusetts', 'Ohio'
         ]
 
         for state in target_states:
@@ -158,14 +158,13 @@ class DataSources:
         # Only the 8 states with actual cease-and-desist / court action are
         # tracked. Any other state returns [] (no verified action on record).
         verified_state_cases = {
-            'Tennessee': [{'title': 'Tennessee Prediction Markets Challenge', 'jurisdiction': 'U.S. District Court, E.D. Tennessee', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'Kalshi obtained TRO Jan 2026 blocking state gaming law enforcement.', 'source': 'Court Records', 'date_filed': '2025-11-01'}],
-            'Ohio': [{'title': 'Ohio Sports Wagering Dispute', 'jurisdiction': 'U.S. District Court, S.D. Ohio', 'case_type': 'Regulatory Enforcement', 'status': 'Pending', 'description': 'Preliminary injunction motion pending against state gaming enforcement.', 'source': 'Court Records', 'date_filed': '2025-09-15'}],
-            'Connecticut': [{'title': 'Connecticut Gaming Law Challenge', 'jurisdiction': 'U.S. District Court, D. Connecticut', 'case_type': 'Regulatory Enforcement', 'status': 'Pending', 'description': 'Injunction motion pending against state cease-and-desist.', 'source': 'Court Records', 'date_filed': '2025-10-20'}],
-            'New Jersey': [{'title': 'New Jersey Regulatory Enforcement', 'jurisdiction': 'New Jersey Division of Gaming Enforcement', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'State cease-and-desist order; Kalshi challenging gambling jurisdiction.', 'source': 'Public Records', 'date_filed': '2025-08-01'}],
-            'Nevada': [{'title': 'Nevada Gaming Commission Action', 'jurisdiction': 'Nevada Division of Financial Institutions', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'Cease-and-desist; sports contracts classified as illegal gambling.', 'source': 'Public Records', 'date_filed': '2025-07-15'}],
-            'New York': [{'title': 'New York BitLicense/Gaming Challenge', 'jurisdiction': 'U.S. District Court, S.D. New York', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'Kalshi lost bid to block NY gaming enforcement (Jan 2026).', 'source': 'Court Records', 'date_filed': '2022-06-01'}],
-            'Massachusetts': [{'title': 'Massachusetts Gaming Law Enforcement', 'jurisdiction': 'Massachusetts Superior Court, Suffolk County', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'Preliminary injunction Jan 2026 barring sports bets; Kalshi appealing.', 'source': 'Court Records', 'date_filed': '2025-12-01'}],
-            'Maryland': [{'title': 'Maryland Sports Wagering Dispute', 'jurisdiction': 'U.S. District Court, D. Maryland', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'Federal court denied Kalshi injunction Aug 2025; state authority upheld.', 'source': 'Court Records', 'date_filed': '2025-05-01'}],
+            'New Jersey': [{'title': 'KalshiEX LLC v. Flaherty (New Jersey)', 'jurisdiction': 'U.S. Court of Appeals, 3rd Circuit (No. 25-1922)', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'FAVORABLE: 3rd Circuit affirmed preliminary injunction Apr 6, 2026 (CEA preempts state gambling law).', 'source': 'Paul Weiss; Holland & Knight', 'date_filed': '2025-03-15'}],
+            'Tennessee': [{'title': 'KalshiEX v. Tennessee (Sports Event Contracts)', 'jurisdiction': 'U.S. District Court, M.D. Tennessee', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'FAVORABLE: Preliminary injunction granted Feb 19, 2026; TN AG appealed to 6th Circuit.', 'source': 'Legal Sports Report; SBC Americas', 'date_filed': '2026-01-12'}],
+            'Nevada': [{'title': 'KalshiEX, LLC v. Hendrick (Nevada)', 'jurisdiction': 'U.S. District Court, D. Nevada (2:25-cv-00575)', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'UNFAVORABLE: PI dissolved Nov 24, 2025; Kalshi appealed to 9th Circuit (No. 25-7516).', 'source': 'Nevada Independent; CourtListener', 'date_filed': '2025-03-28'}],
+            'Maryland': [{'title': 'KalshiEX v. Martin (Maryland)', 'jurisdiction': 'U.S. District Court, D. Maryland (1:25-cv-01283-ABA)', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'UNFAVORABLE: PI denied Aug 1, 2025; 4th Circuit oral argument May 7, 2026.', 'source': 'U.S. Dist. Court D.Md.; Brownstein', 'date_filed': '2025-04-20'}],
+            'New York': [{'title': 'KalshiEX LLC v. New York State Gaming Commission', 'jurisdiction': 'U.S. District Court, S.D.N.Y. (1:25-cv-08846-AT)', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'UNFAVORABLE: Judge Torres denied PI Jul 7, 2026; Kalshi appealing.', 'source': 'NY Attorney General; Gothamist', 'date_filed': '2025-10-20'}],
+            'Massachusetts': [{'title': 'KalshiEX v. Massachusetts (Suffolk Superior Court)', 'jurisdiction': 'Massachusetts Superior Court, Suffolk County', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'UNFAVORABLE: Jan 2026 preliminary injunction bars in-state sports contracts; 38 AGs amicus for MA.', 'source': 'Courthouse News; AZ Capitol Times', 'date_filed': '2025-12-01'}],
+            'Ohio': [{'title': 'KalshiEX v. Ohio (Sports Event Contracts)', 'jurisdiction': 'U.S. District Court, S.D. Ohio', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'UNFAVORABLE: Court ruled against Kalshi ~Mar 2026; 6th Circuit appeal (split with Tennessee).', 'source': 'SBC Americas; ST News', 'date_filed': '2025-10-08'}],
         }
         return verified_state_cases.get(state, [])
 

@@ -22,48 +22,40 @@ DB_PATH = os.path.join(BASE_DIR, 'kalshi.db')
 # database's stored version differs, the seed data is fully refreshed. This
 # ensures corrected data reaches production even when Railway persists the
 # SQLite file across deployments.
-DATA_VERSION = 3
+DATA_VERSION = 4
 
 KALSHI_CASES = [
-    # FEDERAL CASES - Appellate Level
-    # Resolved/Closed Cases
-    ('Kalshi v. CFTC', 'U.S. District Court, D.C.', 'Regulatory Enforcement', 'Resolved',
-     'Kalshi won district court ruling. CFTC withdrew appeal May 2025. Election and economic contracts declared lawful.', 'Public Records', '2023-02-20'),
-    ('CFTC v. Kalshi', 'U.S. Court of Appeals, D.C. Circuit', 'Regulatory Enforcement', 'Resolved',
-     'CFTC appeal dismissed May 2025. Kalshi\'s political event contracts upheld as lawful.', 'Public Records', '2023-01-15'),
+    # ============================================================
+    # FEDERAL CASES
+    # ============================================================
+    # Resolved - Original election/event contract fight
+    ('Kalshi v. CFTC (Election/Event Contracts)', 'U.S. District Court, D.D.C. / D.C. Circuit (No. 24-5205)', 'Regulatory Enforcement', 'Resolved',
+     'FAVORABLE: Kalshi won summary judgment Sep 6, 2024. CFTC dismissed its appeal (No. 24-5205, D.C. Cir.) on May 5, 2025, leaving standing the ruling that Kalshi\'s political/event contracts are lawful under federal law.', 'CourtListener; Practical Law', '2023-11-01'),
 
-    # Active Federal Cases
-    ('SEC Investigation - Market Manipulation', 'U.S. Securities and Exchange Commission', 'Regulatory Inquiry', 'Active',
-     'SEC investigation into potential market manipulation and insider trading allegations.', 'Public Records', '2024-03-15'),
-    ('Congressional Subcommittee Inquiry', 'U.S. House Financial Services Committee', 'Legislative Action', 'Active',
-     'Congressional inquiry into prediction markets and regulatory jurisdiction gaps.', 'Public Records', '2025-06-01'),
-    ('CFTC v. State Regulators', 'U.S. Court of Appeals', 'Regulatory Enforcement', 'Active',
-     'CFTC assertion of exclusive federal regulatory authority over prediction markets (April 2026). States: NY, WI, and others.', 'Public Records', '2026-04-15'),
-    ('Kalshi Consumer Class Action', 'U.S. District Court, N.D. California', 'Civil Litigation', 'Pending',
-     'Class action regarding margin requirements, disclosures, and sports gambling allegations.', 'Public Records', '2023-05-22'),
+    # Active - Federal preemption enforcement
+    ('KalshiEX LLC v. Flaherty (New Jersey)', 'U.S. Court of Appeals, 3rd Circuit (No. 25-1922)', 'Regulatory Enforcement', 'Active',
+     'FAVORABLE: District court granted a preliminary injunction (Apr 2025). Third Circuit AFFIRMED on Apr 6, 2026 — the first federal appellate ruling that the Commodity Exchange Act preempts state gambling laws for sports event contracts on CFTC-registered DCMs.', 'Paul Weiss; Holland & Knight', '2025-03-15'),
+    ('CFTC & DOJ v. Arizona, Connecticut & Illinois', 'U.S. District Courts (multiple)', 'Regulatory Enforcement', 'Active',
+     'The CFTC and U.S. Department of Justice jointly sued AZ, CT and IL on Apr 2, 2026, asserting those states\' enforcement actions against prediction-market platforms are preempted by the Commodity Exchange Act.', 'Holland & Knight', '2026-04-02'),
 
-    # STATE-LEVEL CASES - 8 States with Actual Cease-and-Desist Orders
+    # ============================================================
+    # STATE-LEVEL CASES (with docket numbers)
+    # ============================================================
     # Favorable to Kalshi
-    ('Tennessee Prediction Markets Challenge', 'U.S. District Court, E.D. Tennessee', 'Regulatory Enforcement', 'Active',
-     'Kalshi obtained temporary restraining order (TRO) Jan 2026 blocking state gaming law enforcement. State gaming commission cease-and-desist challenged.', 'Public Records', '2025-11-01'),
-
-    # Pending/Mixed
-    ('Ohio Sports Wagering Dispute', 'U.S. District Court, S.D. Ohio', 'Regulatory Enforcement', 'Pending',
-     'Kalshi preliminary injunction motion pending against Ohio gaming enforcement. Cease-and-desist issued by state gaming commission.', 'Public Records', '2025-09-15'),
-    ('Connecticut Gaming Law Challenge', 'U.S. District Court, D. Connecticut', 'Regulatory Enforcement', 'Pending',
-     'Kalshi injunction motion pending. Connecticut cease-and-desist demands compliance with state gaming laws.', 'Public Records', '2025-10-20'),
-    ('New Jersey Regulatory Enforcement', 'New Jersey Division of Gaming Enforcement', 'Regulatory Enforcement', 'Active',
-     'New Jersey issued cease-and-desist order. Kalshi challenging state gambling jurisdiction.', 'Public Records', '2025-08-01'),
-    ('Nevada Gaming Commission Action', 'Nevada Division of Financial Institutions', 'Regulatory Enforcement', 'Active',
-     'Nevada gaming regulators issued cease-and-desist. Kalshi sports contracts classified as illegal gambling under state law.', 'Public Records', '2025-07-15'),
+    ('KalshiEX v. Tennessee (Sports Event Contracts)', 'U.S. District Court, M.D. Tennessee', 'Regulatory Enforcement', 'Active',
+     'FAVORABLE: Kalshi sued Jan 12, 2026 after a shutdown order. Court granted a preliminary injunction Feb 19, 2026, finding the contracts likely "swaps" preempted by the CEA. Tennessee AG appealed to the Sixth Circuit.', 'Legal Sports Report; SBC Americas', '2026-01-12'),
 
     # Unfavorable to Kalshi
-    ('New York BitLicense/Gaming Challenge', 'U.S. District Court, S.D. New York', 'Regulatory Enforcement', 'Active',
-     'Kalshi lost bid to block NY state gaming law enforcement (Jan 2026). NYDFS maintains state jurisdiction over sports wagering.', 'Public Records', '2022-06-01'),
-    ('Massachusetts Gaming Law Enforcement', 'Massachusetts Superior Court, Suffolk County', 'Regulatory Enforcement', 'Active',
-     'Preliminary injunction issued Jan 2026 barring Kalshi sports bets in Massachusetts. Court found state gaming laws apply. Kalshi appealing.', 'Public Records', '2025-12-01'),
-    ('Maryland Sports Wagering Dispute', 'U.S. District Court, D. Maryland', 'Regulatory Enforcement', 'Active',
-     'Maryland federal court denied Kalshi injunction Aug 2025, held Congress did not intend to preempt state gambling authority.', 'Public Records', '2025-05-01'),
+    ('KalshiEX, LLC v. Hendrick (Nevada)', 'U.S. District Court, D. Nevada (2:25-cv-00575)', 'Regulatory Enforcement', 'Active',
+     'UNFAVORABLE: Preliminary injunction granted Apr 9, 2025 was DISSOLVED by Judge Andrew Gordon on Nov 24, 2025; Kalshi ordered to stop in-state and appealed to the Ninth Circuit (No. 25-7516).', 'Nevada Independent; CourtListener', '2025-03-28'),
+    ('KalshiEX v. Martin (Maryland)', 'U.S. District Court, D. Maryland (1:25-cv-01283-ABA)', 'Regulatory Enforcement', 'Active',
+     'UNFAVORABLE: Judge Adam Abelson denied Kalshi\'s preliminary injunction Aug 1, 2025, holding the CEA does not preempt Maryland gaming law. Appealed to the Fourth Circuit (oral argument set May 7, 2026).', 'U.S. Dist. Court D.Md.; Brownstein', '2025-04-20'),
+    ('KalshiEX LLC v. New York State Gaming Commission', 'U.S. District Court, S.D.N.Y. (1:25-cv-08846-AT)', 'Regulatory Enforcement', 'Active',
+     'UNFAVORABLE: Judge Analisa Torres denied Kalshi\'s preliminary injunction Jul 7, 2026, ruling NY gambling laws apply and are not preempted by the CEA. Kalshi is appealing.', 'NY Attorney General; Gothamist', '2025-10-20'),
+    ('KalshiEX v. Massachusetts (Suffolk Superior Court)', 'Massachusetts Superior Court, Suffolk County', 'Regulatory Enforcement', 'Active',
+     'UNFAVORABLE: Jan 2026 preliminary injunction bars Kalshi from offering in-state sports contracts without a license. 38 state attorneys general filed an amicus brief supporting Massachusetts (Apr 2026).', 'Courthouse News; AZ Capitol Times', '2025-12-01'),
+    ('KalshiEX v. Ohio (Sports Event Contracts)', 'U.S. District Court, S.D. Ohio', 'Regulatory Enforcement', 'Active',
+     'UNFAVORABLE: Kalshi sued the Ohio AG Oct 8, 2025; the court ruled against Kalshi (~Mar 2026). Pending Sixth Circuit appeal alongside Tennessee, creating an intra-circuit split likely headed for higher review.', 'SBC Americas; ST News', '2025-10-08'),
 ]
 
 def seed_initial_data(c, conn):
@@ -81,22 +73,23 @@ def seed_initial_data(c, conn):
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
                 (title, jurisdiction, case_type, status, description, source, date_filed, datetime.now().isoformat()))
 
-        # Seed states - Focus on states with active litigation and regulatory status
+        # Seed states - verified litigation outcomes only (as of Jul 2026)
         states_data = [
-            # Favorable to Kalshi or No Restrictions
-            ('California', 'Approved', 'DCM Status', 'Federal designation applies, no state restrictions'),
-            ('Colorado', 'Approved', 'Money Transmitter', 'Operations active'),
-            ('Tennessee', 'Approved', 'Federal Preemption', 'TRO granted Jan 2026 - federal authority over state'),
+            # Favorable - Kalshi operating under injunction / appellate win
+            ('New Jersey', 'Approved', 'Federal Preemption', '3rd Circuit affirmed injunction Apr 6, 2026 (CEA preempts state law)'),
+            ('Tennessee', 'Approved', 'Federal Preemption', 'Preliminary injunction granted Feb 19, 2026; TN AG appealed (6th Cir.)'),
 
-            # Disputed/Pending - Active Litigation
-            ('Connecticut', 'Disputed', 'Gaming Law Challenge', 'Injunction motion pending'),
-            ('Maryland', 'Denied', 'Federal Court Loss', 'State gaming authority upheld Aug 2025'),
-            ('Massachusetts', 'Denied', 'Preliminary Injunction', 'State gaming laws apply, Jan 2026 ruling'),
-            ('New Jersey', 'Disputed', 'Cease-and-Desist', 'State gaming enforcement ongoing'),
-            ('Nevada', 'Disputed', 'Cease-and-Desist', 'State classified sports contracts as gambling'),
-            ('New York', 'Disputed', 'Injunction Failed', 'Lost challenge to state gaming law Jan 2026'),
-            ('Ohio', 'Disputed', 'Injunction Pending', 'Preliminary injunction motion under review'),
-            ('Wisconsin', 'Disputed', 'Federal Challenge', 'In CFTC v. State Regulators case (Apr 2026)'),
+            # Unfavorable - Kalshi restricted / lost injunction
+            ('Nevada', 'Denied', 'Injunction Dissolved', 'PI dissolved Nov 24, 2025; must cease in-state; 9th Cir. appeal'),
+            ('Maryland', 'Denied', 'Court Loss', 'PI denied Aug 1, 2025; 4th Cir. oral argument May 7, 2026'),
+            ('New York', 'Denied', 'Court Loss', 'PI denied Jul 7, 2026; Kalshi appealing (2nd Cir.)'),
+            ('Massachusetts', 'Denied', 'State Injunction', 'Suffolk Superior Court barred sports contracts, Jan 2026'),
+            ('Ohio', 'Denied', 'Court Loss', 'Adverse ruling ~Mar 2026; 6th Cir. appeal (split with TN)'),
+
+            # Disputed - Named in CFTC/DOJ federal preemption suit (Apr 2, 2026)
+            ('Arizona', 'Disputed', 'Federal Preemption Suit', 'Named in CFTC/DOJ v. AZ, CT, IL (Apr 2, 2026)'),
+            ('Connecticut', 'Disputed', 'Federal Preemption Suit', 'Named in CFTC/DOJ v. AZ, CT, IL (Apr 2, 2026)'),
+            ('Illinois', 'Disputed', 'Federal Preemption Suit', 'Named in CFTC/DOJ v. AZ, CT, IL (Apr 2, 2026)'),
         ]
         for state, status, license_type, notes in states_data:
             c.execute('''INSERT INTO state_status
@@ -104,19 +97,20 @@ def seed_initial_data(c, conn):
                 VALUES (?, ?, ?, ?, ?)''',
                 (state, status, license_type, notes, datetime.now().isoformat()))
 
-        # Seed transactions - Major litigation/regulatory states only
+        # Seed transactions - illustrative activity for litigation states.
+        # NOTE: Kalshi does not publish state-level volume; these figures are
+        # placeholders for the dashboard, not verified market data.
         transactions_data = [
-            ('California', 8200, 95.00, 'Election,Technology', 'Technology Events', 1500),
-            ('Colorado', 18500, 110.00, 'Election,Crypto,Commodities', 'Election Contracts', 3500),
-            ('Connecticut', 1200, 105.00, 'Election,Sports', 'Limited by legal dispute', 220),
-            ('Maryland', 900, 95.00, 'Election,Economic', 'Restricted by court order', 150),
-            ('Massachusetts', 2100, 120.00, 'Election,Sports', 'Restricted - injunction active', 350),
-            ('New Jersey', 1800, 100.00, 'Election,Finance', 'Limited - cease-and-desist', 280),
-            ('Nevada', 600, 105.00, 'Crypto,Commodities', 'Restricted - gaming classification', 95),
-            ('New York', 3200, 140.00, 'Election,Finance', 'Limited - state gaming law', 500),
-            ('Ohio', 1500, 98.00, 'Election,Economic', 'Disputed - injunction pending', 240),
-            ('Tennessee', 2400, 100.00, 'Election,Economic', 'Favorable - TRO granted', 380),
-            ('Wisconsin', 800, 92.00, 'Election', 'In federal challenge', 130),
+            ('New Jersey', 1800, 100.00, 'Election,Sports,Finance', 'Operating - 3rd Cir. win', 280),
+            ('Tennessee', 2400, 100.00, 'Election,Sports,Economic', 'Operating - injunction', 380),
+            ('Nevada', 600, 105.00, 'Election,Economic', 'Restricted - PI dissolved', 95),
+            ('Maryland', 900, 95.00, 'Election,Economic', 'Restricted - court loss', 150),
+            ('New York', 3200, 140.00, 'Election,Finance', 'Restricted - court loss', 500),
+            ('Massachusetts', 2100, 120.00, 'Election,Sports', 'Restricted - state injunction', 350),
+            ('Ohio', 1500, 98.00, 'Election,Economic', 'Restricted - court loss', 240),
+            ('Arizona', 1100, 95.00, 'Election,Economic', 'Disputed - federal suit', 180),
+            ('Connecticut', 1200, 105.00, 'Election,Finance', 'Disputed - federal suit', 220),
+            ('Illinois', 2600, 110.00, 'Election,Economic', 'Disputed - federal suit', 430),
         ]
         for state, volume, avg_value, contracts, top, users in transactions_data:
             c.execute('''INSERT INTO transaction_data
