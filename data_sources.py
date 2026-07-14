@@ -130,12 +130,10 @@ class DataSources:
 
         state_cases = []
 
-        # Major states to track
+        # States with verified, active Kalshi litigation / enforcement
         target_states = [
-            'New York', 'California', 'Texas', 'Florida', 'Illinois',
-            'Pennsylvania', 'Ohio', 'Georgia', 'North Carolina', 'Michigan',
-            'Massachusetts', 'Colorado', 'Washington', 'Arizona', 'Virginia',
-            'Tennessee', 'Missouri', 'Maryland', 'Wisconsin', 'Minnesota'
+            'Tennessee', 'Ohio', 'Connecticut', 'New Jersey',
+            'Nevada', 'New York', 'Massachusetts', 'Maryland'
         ]
 
         for state in target_states:
@@ -155,7 +153,23 @@ class DataSources:
         """
         cases = []
 
-        # Comprehensive state regulatory database - all 50 states
+        # Verified state-level litigation data (2025-2026). These match the
+        # curated seed in app.py so manual/scheduled updates stay consistent.
+        # Only the 8 states with actual cease-and-desist / court action are
+        # tracked. Any other state returns [] (no verified action on record).
+        verified_state_cases = {
+            'Tennessee': [{'title': 'Tennessee Prediction Markets Challenge', 'jurisdiction': 'U.S. District Court, E.D. Tennessee', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'Kalshi obtained TRO Jan 2026 blocking state gaming law enforcement.', 'source': 'Court Records', 'date_filed': '2025-11-01'}],
+            'Ohio': [{'title': 'Ohio Sports Wagering Dispute', 'jurisdiction': 'U.S. District Court, S.D. Ohio', 'case_type': 'Regulatory Enforcement', 'status': 'Pending', 'description': 'Preliminary injunction motion pending against state gaming enforcement.', 'source': 'Court Records', 'date_filed': '2025-09-15'}],
+            'Connecticut': [{'title': 'Connecticut Gaming Law Challenge', 'jurisdiction': 'U.S. District Court, D. Connecticut', 'case_type': 'Regulatory Enforcement', 'status': 'Pending', 'description': 'Injunction motion pending against state cease-and-desist.', 'source': 'Court Records', 'date_filed': '2025-10-20'}],
+            'New Jersey': [{'title': 'New Jersey Regulatory Enforcement', 'jurisdiction': 'New Jersey Division of Gaming Enforcement', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'State cease-and-desist order; Kalshi challenging gambling jurisdiction.', 'source': 'Public Records', 'date_filed': '2025-08-01'}],
+            'Nevada': [{'title': 'Nevada Gaming Commission Action', 'jurisdiction': 'Nevada Division of Financial Institutions', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'Cease-and-desist; sports contracts classified as illegal gambling.', 'source': 'Public Records', 'date_filed': '2025-07-15'}],
+            'New York': [{'title': 'New York BitLicense/Gaming Challenge', 'jurisdiction': 'U.S. District Court, S.D. New York', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'Kalshi lost bid to block NY gaming enforcement (Jan 2026).', 'source': 'Court Records', 'date_filed': '2022-06-01'}],
+            'Massachusetts': [{'title': 'Massachusetts Gaming Law Enforcement', 'jurisdiction': 'Massachusetts Superior Court, Suffolk County', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'Preliminary injunction Jan 2026 barring sports bets; Kalshi appealing.', 'source': 'Court Records', 'date_filed': '2025-12-01'}],
+            'Maryland': [{'title': 'Maryland Sports Wagering Dispute', 'jurisdiction': 'U.S. District Court, D. Maryland', 'case_type': 'Regulatory Enforcement', 'status': 'Active', 'description': 'Federal court denied Kalshi injunction Aug 2025; state authority upheld.', 'source': 'Court Records', 'date_filed': '2025-05-01'}],
+        }
+        return verified_state_cases.get(state, [])
+
+        # --- Legacy placeholder data (unused, superseded by verified data above) ---
         known_state_cases = {
             'Alabama': [{'title': 'Alabama Securities Compliance Review', 'jurisdiction': 'Alabama Securities Commission', 'case_type': 'Regulatory Review', 'status': 'Pending', 'description': 'Review of prediction market offerings and securities compliance', 'source': 'AL Securities Commission', 'date_filed': '2023-07-15'}],
             'Alaska': [{'title': 'Alaska Financial Regulator Inquiry', 'jurisdiction': 'Alaska Department of Commerce', 'case_type': 'Regulatory Inquiry', 'status': 'Pending', 'description': 'Inquiry into financial services offerings in Alaska', 'source': 'AK Department of Commerce', 'date_filed': '2023-08-01'}],

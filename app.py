@@ -18,6 +18,12 @@ CORS(app)
 
 DB_PATH = os.path.join(BASE_DIR, 'kalshi.db')
 
+# Bump this whenever the hardcoded seed data changes. On startup, if the
+# database's stored version differs, the seed data is fully refreshed. This
+# ensures corrected data reaches production even when Railway persists the
+# SQLite file across deployments.
+DATA_VERSION = 3
+
 KALSHI_CASES = [
     # FEDERAL CASES - Appellate Level
     # Resolved/Closed Cases
@@ -118,8 +124,12 @@ def seed_initial_data(c, conn):
                 VALUES (?, ?, ?, ?, ?, ?, ?)''',
                 (state, volume, avg_value, contracts, top, users, datetime.now().isoformat()))
 
+        # Record the data version so we only re-seed when the data changes
+        c.execute('''INSERT OR REPLACE INTO meta (key, value) VALUES (?, ?)''',
+                  ('data_version', str(DATA_VERSION)))
+
         conn.commit()
-        logger.info(f"Seeded {len(KALSHI_CASES)} cases, {len(states_data)} states, {len(transactions_data)} transactions")
+        logger.info(f"Seeded {len(KALSHI_CASES)} cases, {len(states_data)} states, {len(transactions_data)} transactions (v{DATA_VERSION})")
     except Exception as e:
         logger.error(f"Error seeding data: {e}")
 
@@ -159,14 +169,24 @@ def init_db():
         last_update TEXT
     )''')
 
+    c.execute('''CREATE TABLE IF NOT EXISTS meta (
+        key TEXT PRIMARY KEY,
+        value TEXT
+    )''')
+
     conn.commit()
 
-    # Seed data if any table is empty
+    # Determine whether we need to (re)seed. Re-seed when the table is empty
+    # OR when the stored data version is behind the current DATA_VERSION.
     c.execute('SELECT COUNT(*) FROM state_status')
     state_count = c.fetchone()[0]
 
-    if state_count == 0:
-        logger.info("Seeding database with initial data...")
+    c.execute("SELECT value FROM meta WHERE key = 'data_version'")
+    row = c.fetchone()
+    stored_version = int(row[0]) if row else 0
+
+    if state_count == 0 or stored_version != DATA_VERSION:
+        logger.info(f"Seeding database (rows={state_count}, stored_v={stored_version}, current_v={DATA_VERSION})...")
         seed_initial_data(c, conn)
 
     conn.close()
@@ -377,20 +397,25 @@ def shutdown_scheduler(exception=None):
     except:
         pass
 
+# Initialize the database at import time so it runs under gunicorn/WSGI
+# (the __main__ block below never executes when served by gunicorn).
+# The version check inside init_db() ensures corrected seed data is applied
+# even when Railway persists the SQLite file across deployments.
+try:
+    init_db()
+except Exception as e:
+    logger.error(f"Startup init_db failed: {e}")
+
 if __name__ == '__main__':
-    # Initialize database
+    # Initialize database (also runs at import time above)
     init_db()
 
-    # Start scheduler with error handling
+    # Start scheduler with error handling. Note: we intentionally do NOT run
+    # update_data() on startup — the curated KALSHI_CASES seed is the single
+    # source of truth. Running the live fetcher here would re-insert
+    # unverified cases on top of the verified data.
     try:
         scheduler = start_scheduler()
-        # Trigger initial data update on startup
-        try:
-            from data_sources import update_data
-            logger.info("Running initial data update on startup...")
-            update_data(DB_PATH)
-        except Exception as e:
-            logger.warning(f"Initial data update failed: {e}")
     except Exception as e:
         logger.error(f"Failed to start scheduler: {e}")
 
